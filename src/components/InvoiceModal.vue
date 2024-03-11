@@ -183,6 +183,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { uid } from "uid";
 export default {
   name: "invoiceModal",
   data() {
@@ -212,17 +213,47 @@ export default {
       invoiceTotal: 0,
     };
   },
+  created() {
+    this.invoiceDateUnix = Date.now();
+    this.invoiceDate = new Date(this.invoiceDateUnix).toLocaleDateString(
+      "ru-RU",
+      this.dateOptions
+    );
+  },
   methods: {
     ...mapMutations(["TOGGLE_INVOICE"]),
     checkClick() {},
     submitForm() {},
-    deleteInvoiceItem() {},
-    addNewInvoiceItem() {},
+    deleteInvoiceItem(id) {
+      this.invoiceItemList = this.invoiceItemList.filter(
+        (item) => item.id !== id
+      );
+    },
+    addNewInvoiceItem() {
+      this.invoiceItemList.push({
+        id: uid(),
+        itemName: "",
+        qty: "",
+        price: 0,
+        total: 0,
+      });
+    },
     closeInvoice() {
       this.TOGGLE_INVOICE();
     },
     saveDraft() {},
     publishInvoice() {},
+  },
+  watch: {
+    paymentTerms() {
+      const date = new Date();
+      this.paymentDueDateUnix = date.setDate(
+        date.getDate() + parseInt(this.paymentTerms)
+      );
+      this.paymentDueDate = new Date(
+        this.paymentDueDateUnix
+      ).toLocaleDateString("ru-RU", this.dateOptions);
+    },
   },
 };
 </script>
