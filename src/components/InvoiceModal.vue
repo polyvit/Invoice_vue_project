@@ -4,7 +4,7 @@
     ref="invoiceWrap"
     class="invoice-wrap flex flex-column"
   >
-    <form @submit="submitForm" class="invoice-content">
+    <form @submit.prevent="submitForm" class="invoice-content">
       <h1>New Invoice</h1>
       <!-- From -->
       <div class="bill-from flex flex-column">
@@ -182,6 +182,9 @@
 </template>
 
 <script>
+import { db } from "../firebase/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+
 import { mapMutations } from "vuex";
 import { uid } from "uid";
 export default {
@@ -223,7 +226,45 @@ export default {
   methods: {
     ...mapMutations(["TOGGLE_INVOICE"]),
     checkClick() {},
-    submitForm() {},
+    calcInvoiceTotal() {
+      this.invoiceTotal = 0;
+      this.invoiceItemList.forEach((item) => (this.invoiceTotal += item.total));
+    },
+    async uploadInvoice() {
+      if (this.invoiceItemList.length <= 0) {
+        alert("Please ensure you filled out invoice items");
+        return;
+      }
+      this.calcInvoiceTotal();
+      await addDoc(collection(db, "invoices"), {
+        invoiceId: uid(6),
+        billerStreetAddress: this.billerStreetAddress,
+        billerCity: this.billerCity,
+        billerZipCode: this.billerZipCode,
+        billerCountry: this.billerCountry,
+        clientName: this.clientName,
+        clientEmail: this.clientEmail,
+        clientStreetAddress: this.clientStreetAddress,
+        clientCity: this.clientCity,
+        clientZipCode: this.clientZipCode,
+        clientCountry: this.clientCountry,
+        invoiceDateUnix: this.invoiceDateUnix,
+        invoiceDate: this.invoiceDate,
+        paymentTerms: this.paymentTerms,
+        paymentDueDateUnix: this.paymentDueDateUnix,
+        paymentDueDate: this.paymentDueDate,
+        productDescription: this.productDescription,
+        invoicePending: this.invoicePending,
+        invoiceDraft: this.invoiceDraft,
+        invoiceItemList: this.invoiceItemList,
+        invoiceTotal: this.invoiceTotal,
+        invoicePaid: null,
+      });
+      this.TOGGLE_INVOICE();
+    },
+    submitForm() {
+      this.uploadInvoice();
+    },
     deleteInvoiceItem(id) {
       this.invoiceItemList = this.invoiceItemList.filter(
         (item) => item.id !== id
@@ -241,8 +282,12 @@ export default {
     closeInvoice() {
       this.TOGGLE_INVOICE();
     },
-    saveDraft() {},
-    publishInvoice() {},
+    saveDraft() {
+      this.invoiceDraft = true;
+    },
+    publishInvoice() {
+      this.invoicePending = true;
+    },
   },
   watch: {
     paymentTerms() {
