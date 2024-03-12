@@ -228,8 +228,12 @@ export default {
     );
   },
   methods: {
-    ...mapMutations(["TOGGLE_INVOICE"]),
-    checkClick() {},
+    ...mapMutations(["TOGGLE_INVOICE", "TOGGLE_MODAL"]),
+    checkClick(e) {
+      if (e.target === this.$refs.invoiceWrap) {
+        this.TOGGLE_MODAL();
+      }
+    },
     calcInvoiceTotal() {
       this.invoiceTotal = 0;
       this.invoiceItemList.forEach((item) => (this.invoiceTotal += item.total));
