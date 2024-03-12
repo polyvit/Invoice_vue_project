@@ -1,5 +1,6 @@
 <template>
   <div class="home container">
+    <!-- Header -->
     <div class="header flex">
       <div class="left flex flex-column">
         <h1>Invoices</h1>
@@ -24,13 +25,29 @@
         </div>
       </div>
     </div>
+    <!-- Invoices List -->
+    <div v-if="invoices.length > 0">
+      <Invoice
+        v-for="invoice in invoices"
+        :invoice="invoice"
+        :key="invoice.docId"
+      />
+    </div>
+    <div v-else class="empty flex flex-column">
+      <img src="@/assets/illustration-empty.svg" alt="no-invoices" />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
+import Invoice from "../components/Invoice.vue";
+
 export default {
   name: "HomeView",
+  components: {
+    Invoice,
+  },
   data() {
     return {
       filterMenu: null,
@@ -44,6 +61,9 @@ export default {
     createInvoice() {
       this.TOGGLE_INVOICE();
     },
+  },
+  computed: {
+    ...mapState(["invoices"]),
   },
 };
 </script>
