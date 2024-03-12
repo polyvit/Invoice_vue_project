@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import InvoiceModal from "./components/InvoiceModal.vue";
 import Modal from "./components/Modal.vue";
 import Navigation from "./components/Navigation.vue";
@@ -35,10 +35,12 @@ export default {
     };
   },
   created() {
+    this.GET_INVOICES();
     this.checkScreen();
     window.addEventListener("resize", this.checkScreen);
   },
   methods: {
+    ...mapActions(["GET_INVOICES"]),
     checkScreen() {
       const windowWidth = window.innerWidth;
       if (windowWidth <= 750) {
@@ -49,7 +51,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["invoiceModal", "modalActive"]),
+    ...mapState(["invoiceModal", "modalActive", "invoicesLoaded"]),
   },
 };
 </script>
