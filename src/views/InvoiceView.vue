@@ -129,10 +129,15 @@ export default {
       "TOGGLE_EDIT_INVOICE",
       "TOGGLE_INVOICE",
     ]),
-    ...mapActions(["DELETE_INVOICE_FROM_DB"]),
+    ...mapActions([
+      "DELETE_INVOICE_FROM_DB",
+      "UPDATE_STATUS_TO_PAID_IN_DB",
+      "UPDATE_STATUS_TO_PENDING_IN_DB",
+    ]),
     getCurrentInvoice() {
       this.SET_CURRENT_INVOICE(this.$route.params.invoiceId);
       this.currentInvoice = this.currentInvoiceArray[0];
+      console.log(this.currentInvoice);
     },
     toggleEditInvoice() {
       this.TOGGLE_EDIT_INVOICE();
@@ -142,8 +147,12 @@ export default {
       await this.DELETE_INVOICE_FROM_DB(id);
       this.$router.push({ name: "home" });
     },
-    updateStatusToPaid(id) {},
-    updateStatusToPending(id) {},
+    async updateStatusToPaid(id) {
+      await this.UPDATE_STATUS_TO_PAID_IN_DB(id);
+    },
+    async updateStatusToPending(id) {
+      await this.UPDATE_STATUS_TO_PENDING_IN_DB(id);
+    },
   },
   watch: {
     editInvoice() {
