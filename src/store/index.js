@@ -8,6 +8,8 @@ export default createStore({
     invoiceModal: null,
     modalActive: null,
     invoicesLoaded: null,
+    currentInvoiceArray: null,
+    editInvoice: null,
   },
   mutations: {
     TOGGLE_INVOICE(state) {
@@ -21,6 +23,17 @@ export default createStore({
     },
     INVOICES_LOADED(state) {
       state.invoicesLoaded = true;
+    },
+    SET_CURRENT_INVOICE(state, payload) {
+      state.currentInvoiceArray = state.invoices.filter(
+        (inv) => inv.invoiceId === payload
+      );
+    },
+    TOGGLE_EDIT_INVOICE(state) {
+      state.editInvoice = !state.editInvoice;
+    },
+    DELETE_INVOICE(state, payload) {
+      state.invoices = state.invoices.filter((inv) => inv.docId !== payload);
     },
   },
   actions: {
@@ -57,6 +70,13 @@ export default createStore({
         }
       });
       commit("INVOICES_LOADED");
+    },
+    async UPDATE_INVOICE({ commit, dispatch }, { docId, routeId }) {
+      commit("DELETE_INVOICE", docId);
+      await dispatch("GET_INVOICES");
+      commit("TOGGLE_INVOICE");
+      commit("TOGGLE_EDIT_INVOICE");
+      commit("SET_CURRENT_INVOICE", routeId);
     },
   },
   modules: {},
