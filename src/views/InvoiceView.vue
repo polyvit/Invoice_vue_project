@@ -120,7 +120,8 @@ export default {
   computed: {
     ...mapState(["currentInvoiceArray", "editInvoice"]),
   },
-  created() {
+  async created() {
+    await this.GET_INVOICES();
     this.getCurrentInvoice();
   },
   methods: {
@@ -130,6 +131,7 @@ export default {
       "TOGGLE_INVOICE",
     ]),
     ...mapActions([
+      "GET_INVOICES",
       "DELETE_INVOICE_FROM_DB",
       "UPDATE_STATUS_TO_PAID_IN_DB",
       "UPDATE_STATUS_TO_PENDING_IN_DB",
@@ -137,7 +139,6 @@ export default {
     getCurrentInvoice() {
       this.SET_CURRENT_INVOICE(this.$route.params.invoiceId);
       this.currentInvoice = this.currentInvoiceArray[0];
-      console.log(this.currentInvoice);
     },
     toggleEditInvoice() {
       this.TOGGLE_EDIT_INVOICE();
